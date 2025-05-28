@@ -14,15 +14,15 @@ class Scheduler {
         virtual void Scheduler::scheduleTask();
         
         int throughput {};
-        std::vector<Task> taskList {};
+        std::vector<std::unique_ptr<Task>> taskList {};
 
     public:
-        Task* executing = nullptr;
+        std::unique_ptr<Task> executing {};
         int currentTime = 0;
 
         void runTick();
         virtual bool hasTasks();
-        virtual void addTasks(std::vector<Task> tasks);
+        virtual void createTask(std::string& name, int ticksToCompletion);
 
         
         
@@ -35,9 +35,9 @@ class Scheduler {
 
 class FIFO : public Scheduler {
     protected:
-        std::queue<Task> taskList{};
+        std::queue<std::unique_ptr<Task>> taskQueue{};
         
     public:
         void scheduleTask() override;
-        void addTasks(std::vector<Task>) override;
+        void createTask(std::string& name, int ticksToCompletion) override;
 };

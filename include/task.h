@@ -6,6 +6,9 @@ class Task {
         int ticksToCompletion {};
         std::string name {};
 
+        Task(const std::string& taskName, int ticks) 
+            : ticksToCompletion(ticks), name(taskName), waitingTime(0), arrivalTime(0) {}
+
         void incrementWaitingTime();
 
         void markArrival(const int clock);

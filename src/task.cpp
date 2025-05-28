@@ -1,13 +1,13 @@
 #include <task.h>
 
 void Task::incrementWaitingTime() {
-    ++this->waitingTime;
+    ++waitingTime;
 }
 
 void Task::markArrival(const int clock) {
-    this->arrivalTime = clock;
+    arrivalTime = clock;
 }
 
 void Task::decrementTimeToExecute() {
-    --this->ticksToCompletion;
+    --ticksToCompletion;
 }

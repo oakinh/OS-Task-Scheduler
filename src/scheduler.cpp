@@ -4,6 +4,7 @@
 #include <scheduler.h>
 #include <iostream>
 #include <typeinfo>
+#include <memory>
 
 ////////////////
 // Base Class //
@@ -12,14 +13,14 @@
 Scheduler::Scheduler() {}
 
 void Scheduler::runTick() {
-    this->executeCurrentTask();
-    this->clearCompleted();
-    this->scheduleTask();
+    clearCompleted();
+    executeCurrentTask();
+    scheduleTask();
     ++currentTime;
 }
 
 void Scheduler::executeCurrentTask() {
-    if (executing != nullptr) {
+    if (executing) {
         executing->decrementTimeToExecute();
     } else {
         std::cerr << "Nothing to execute" << std::endl;
@@ -27,8 +28,8 @@ void Scheduler::executeCurrentTask() {
 }
 
 void Scheduler::clearCompleted() {
-    if (executing->ticksToCompletion == 0) {
-        executing = nullptr;
+    if (executing && executing->ticksToCompletion <= 0) {
+        executing.reset();
     }
 }
 
@@ -37,20 +38,18 @@ void Scheduler::scheduleTask() {
 }
 
 bool Scheduler::hasTasks() {
-    if (!this->taskList.empty()) {
+    if (!taskList.empty()) {
         std::cout << "All tasks completed" << std::endl;
         return false;
     }
     return true;
 }
 
-void Scheduler::addTasks(std::vector<Task> tasks) {
-    if (typeid(this->taskList) != typeid(std::vector<Task>)) {
+void Scheduler::createTask(std::string& name, int ticksToCompletion) {
+    if (typeid(taskList) != typeid(std::vector<Task>)) {
         std::cerr << "Make sure addTasks is implemented for the corresponding data structure" << std::endl;
     }
-    for (auto task : tasks) {
-        this->taskList.push_back(task);
-    }
+    taskList.push_back(std::make_unique<Task>(name, ticksToCompletion));
 }
 
 //////////
@@ -58,14 +57,12 @@ void Scheduler::addTasks(std::vector<Task> tasks) {
 //////////
 
 void FIFO::scheduleTask() {
-    if (taskList.size() != 0) {
-        executing = &taskList.front();
-        taskList.pop();
+    if (!executing && !taskQueue.empty()) {
+        executing = std::move(taskList.front());
+        taskQueue.pop();
     }
 }
 
-void FIFO::addTasks(std::vector<Task> tasks) {
-    for (auto task : tasks) {
-        this->taskList.push(task);
-    }
+void FIFO::createTask(std::string& name, int ticksToCompletion) {
+    taskQueue.push(std::make_unique<Task>(name, ticksToCompletion));
 }

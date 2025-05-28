@@ -32,7 +32,11 @@ int main() {
         } else {
             std::cerr << "Invalid input" << std::endl;
         }
+
+        scheduler->createTask(taskName, ticksToCompletion);
     }
+
+    
     
 
     return 0;
