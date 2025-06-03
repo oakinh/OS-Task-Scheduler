@@ -13,7 +13,6 @@
 void Scheduler::runTick() {
     clearCompleted();
     executeCurrentTask();
-    scheduleTask();
     ++currentTime;
 }
 
@@ -26,7 +25,9 @@ void Scheduler::executeCurrentTask() {
 }
 
 void Scheduler::clearCompleted() {
-    if (executing && executing->ticksToCompletion <= 0) {
+    if (!executing) {
+        scheduleTask();
+    } else if (executing->ticksToCompletion <= 0) {
         std::cout 
             << "Task " 
             << executing->name 

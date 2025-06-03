@@ -25,7 +25,10 @@ int main() {
             continue;
         }
 
-        if (nameCandidate == "done") {
+        std::string possibleTermination = nameCandidate;
+        toLower(possibleTermination);
+        trim(possibleTermination);
+        if (possibleTermination == "done") {
             break;
         }
 
