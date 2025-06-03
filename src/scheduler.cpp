@@ -10,8 +10,6 @@
 // Base Class //
 ////////////////
 
-Scheduler::Scheduler() {}
-
 void Scheduler::runTick() {
     clearCompleted();
     executeCurrentTask();
@@ -23,13 +21,18 @@ void Scheduler::executeCurrentTask() {
     if (executing) {
         executing->decrementTimeToExecute();
     } else {
-        std::cerr << "Nothing to execute" << std::endl;
+        std::cerr << "Nothing to execute\n";
     }
 }
 
 void Scheduler::clearCompleted() {
     if (executing && executing->ticksToCompletion <= 0) {
+        std::cout 
+            << "Task " 
+            << executing->name 
+            << " complete. Scheduling new task...\n";
         executing.reset();
+        scheduleTask();
     }
 }
 
@@ -38,18 +41,39 @@ void Scheduler::scheduleTask() {
 }
 
 bool Scheduler::hasTasks() {
-    if (!taskList.empty()) {
-        std::cout << "All tasks completed" << std::endl;
+    if (taskList.empty()) {
+        std::cout << "All tasks completed\n";
         return false;
     }
     return true;
 }
 
-void Scheduler::createTask(std::string& name, int ticksToCompletion) {
-    if (typeid(taskList) != typeid(std::vector<Task>)) {
-        std::cerr << "Make sure addTasks is implemented for the corresponding data structure" << std::endl;
+void Scheduler::printTasks() {
+    if (taskList.empty()) {
+        std::cout << "No tasks were found\n";
+        return; 
     }
+    for (size_t i = 0; i < taskList.size(); ++i) {
+        if (taskList[i]) {
+            std::cout 
+                << i
+                << ". " 
+                << taskList[i]->name 
+                << " | Execution Time: " 
+                << taskList[i]->ticksToCompletion 
+                << "\n";
+        }
+    }
+}
+
+void Scheduler::createTask(std::string& name, int ticksToCompletion) {
+    static_assert(
+        std::is_same_v<decltype(taskList),
+            std::vector<std::unique_ptr<Task>>>,
+            "Scheduler::taskList must be a vector of unique_ptr<Task>"
+    );
     taskList.push_back(std::make_unique<Task>(name, ticksToCompletion));
+    std::cout << "-> taskList.size() is now " << taskList.size() << "\n";
 }
 
 //////////
@@ -57,12 +81,9 @@ void Scheduler::createTask(std::string& name, int ticksToCompletion) {
 //////////
 
 void FIFO::scheduleTask() {
-    if (!executing && !taskQueue.empty()) {
+    if (!executing && !taskList.empty()) {
         executing = std::move(taskList.front());
-        taskQueue.pop();
+        taskList.erase(taskList.begin());
+        std::cout << "Scheduled FIFO style: " << executing->name << "\n";
     }
-}
-
-void FIFO::createTask(std::string& name, int ticksToCompletion) {
-    taskQueue.push(std::make_unique<Task>(name, ticksToCompletion));
 }

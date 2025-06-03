@@ -18,26 +18,38 @@ int main() {
         std::getline(std::cin, line);
         
         std::istringstream iss(line);
-        std::string taskName {};
-        int ticksToCompletion {};
-        std::string possibleCmd = taskName;
-        trim(possibleCmd);
-        toLower(possibleCmd);
-
-        if (iss >> taskName >> ticksToCompletion) {
-            if (possibleCmd == "done") {
-                gettingInput = false;
-            }
-            std::cout << "Task name: " << taskName << "Execution Time: " << ticksToCompletion << std::endl;
-        } else {
-            std::cerr << "Invalid input" << std::endl;
+        std::string nameCandidate {};
+        
+        if (!(iss >> nameCandidate)) {
+            std::cerr << "No input detected.\n";
+            continue;
         }
 
-        scheduler->createTask(taskName, ticksToCompletion);
+        if (nameCandidate == "done") {
+            break;
+        }
+
+        int ticksToCompletion {};
+
+        if (!(iss >> ticksToCompletion)) {
+            std::cerr << "Invalid format. Expected <taskName> <integer>\n";
+            continue;
+        }
+
+        std::string leftover {};
+        if (iss >> leftover) {
+            std::cerr << "Extra data after integer" << leftover << "\"\n";
+            continue;
+        }
+        scheduler->createTask(nameCandidate, ticksToCompletion);
+        std::cout << "Task created successfully \n\n";
     }
 
-    
-    
+    scheduler->printTasks();
 
-    return 0;
+    while (scheduler->hasTasks()) {
+        scheduler->runTick();
+    }
+
+    return 0; 
 }
