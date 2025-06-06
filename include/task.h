@@ -6,8 +6,8 @@ class Task {
         int ticksToCompletion {};
         std::string name {};
 
-        Task(const std::string& taskName, int ticks) 
-            : ticksToCompletion(ticks), name(taskName), waitingTime(0), arrivalTime(0) {}
+        Task(const std::string taskName, int ticksToCompletion);
+            
 
         void incrementWaitingTime();
 
