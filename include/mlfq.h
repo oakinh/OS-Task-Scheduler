@@ -6,8 +6,19 @@
 
 class MLFQ {
     private:
+        static constexpr int timeSlice = 10;
+        int currentTime = 0;
+
         int queueLevels {};
-        std::unordered_map<int, std::vector<std::unique_ptr<Task>>> multiQueue {};
+        std::vector<std::vector<std::unique_ptr<Task>>> multiQueue {};
+
+        Task* executing { nullptr };
+
+        int currentLevel = 0;
+        int currentIndex = 0;
+
+
+        void MLFQ::runTick();
 
     public:
         MLFQ(int queueLevels = 3);
