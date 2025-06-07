@@ -4,6 +4,7 @@
 class Task {
     public:
         int ticksToCompletion {};
+        int allotmentRemaining {};
         std::string name {};
 
         Task(const std::string taskName, int ticksToCompletion);
@@ -13,7 +14,7 @@ class Task {
 
         void markArrival(const int clock);
 
-        void decrementTimeToExecute();
+        void runTask();
     private:
         int waitingTime {};
         int arrivalTime {};

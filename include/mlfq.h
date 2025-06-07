@@ -3,25 +3,24 @@
 #include <vector>
 #include <task.h>
 #include <memory>
+#include <deque>
 
 class MLFQ {
     private:
         static constexpr int timeSlice = 10;
+        static constexpr int baseAllotment = 10;
         int currentTime = 0;
+        int currentLevel = 0;
 
         int queueLevels {};
-        std::vector<std::vector<std::unique_ptr<Task>>> multiQueue {};
+        std::vector<std::deque<std::unique_ptr<Task>>> multiQueue {};
 
         Task* executing { nullptr };
-
-        int currentLevel = 0;
-        int currentIndex = 0;
-
-
-        void MLFQ::runTick();
+        
+        void scheduleTask();
 
     public:
         MLFQ(int queueLevels = 3);
-        void scheduleTask();
+        void MLFQ::runTick();
         void createTask(std::string_view name, int ticksToCompletion);
 };

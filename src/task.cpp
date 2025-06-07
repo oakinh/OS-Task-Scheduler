@@ -11,6 +11,7 @@ void Task::markArrival(const int clock) {
     arrivalTime = clock;
 }
 
-void Task::decrementTimeToExecute() {
+void Task::runTask() {
     --ticksToCompletion;
+    --allotmentRemaining;
 }
